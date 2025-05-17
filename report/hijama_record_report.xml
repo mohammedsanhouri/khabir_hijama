@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hijama_record_report">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="row pt-0">
+                    <div class="col-12">
+                        <img style="width: 95%;" t-att-src="'/khabir_hijama/static/src/img/hijama.png'"/>
+                    </div>
+                </div>
+                <section class="pt-5">
+                    <div class="container">
+                        <h3 class="fw-bold text-center pt-3">Hijama Invoice Report</h3>
+                        <table class="w-100">
+                            <tr class="text-center" style="background-color:#f0f0f0;">
+                                <th class="p-2">Amount Paid By Bank</th>
+                                <th>Amount Paid By Cash</th>
+                                <th>Total</th>
+                                <th>Cupping type</th>
+                                <th>Patient</th>
+                                <th>Invoice Date</th>
+                                <th>Invoice Ref</th>
+                            </tr>
+                            <t t-set="all_payment_in_cash" t-value="0"/>
+                            <t t-set="all_payment_in_bank" t-value="0"/>
+                            <t t-set="all_total" t-value="0"/>
+                            <t t-foreach="docs" t-as="doc">
+                                <t t-if="doc.is_invoiced">
+                                    <t t-set="payments_vals" t-value="doc.invoice_ids[0].sudo().invoice_payments_widget and doc.invoice_ids[0].sudo().invoice_payments_widget['content'] or []"/>
+                                    <t t-set="payment_in_bank"
+                                       t-value="sum(payments['amount'] for payments in payments_vals if payments['journal_name'] == 'Bank')"/>
+                                    <t t-set="payment_in_cash"
+                                       t-value="sum(payments['amount'] for payments in payments_vals if payments['journal_name'] == 'Cash')"/>
+
+                                    <t t-set="all_payment_in_bank" t-value="all_payment_in_bank + payment_in_bank"/>
+                                    <t t-set="all_payment_in_cash" t-value="all_payment_in_cash + payment_in_cash"/>
+                                    <t t-set="all_total" t-value="all_total + doc.invoice_ids[0].amount_total"/>
+
+                                    <tr class="text-center">
+
+                                        <td class="text-end">
+                                            <t t-esc="doc.invoice_ids[0].company_id.currency_id.symbol"/><span t-out="payment_in_bank"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="doc.invoice_ids[0].company_id.currency_id.symbol"/><span t-out="payment_in_cash"></span>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="doc.invoice_ids[0].amount_total"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="doc.hijama_type.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="doc.customer_id.name"/>
+                                        </td>
+                                        <td class="">
+                                            <span t-field="doc.invoice_ids[0].invoice_date" t-options='{"format": "dd-MM-yyyy"}'/>
+                                        </td>
+                                        <td>
+                                            <span t-field="doc.invoice_ids[0].name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <tr class="text-end fw-bold">
+                                <td>
+                                    <t t-esc="doc.invoice_ids[0].company_id.currency_id.symbol"/><t t-out="all_payment_in_bank"/>
+                                </td>
+                                <td>
+                                    <t t-esc="doc.invoice_ids[0].company_id.currency_id.symbol"/><t t-out="all_payment_in_cash"/>
+                                </td>
+                                <td>
+                                    <t t-esc="doc.invoice_ids[0].company_id.currency_id.symbol"/><t t-out="all_total"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </section>
+            </t>
+        </t>
+    </template>
+</odoo>

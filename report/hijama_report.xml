@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hijama_report">
+        <t t-call="web.html_container">
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="no_footer" t-value="True"/>
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="doc">
+                <div class="row pt-0">
+                    <div class="col-12">
+                        <img style="width: 95%;" t-att-src="'/khabir_hijama/static/src/img/hijama.png'"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6" style="border: 1px solid gray;">
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;">
+                            <div class="col-4 bg-200"
+                                style="border-radius: 0px 10px 10px 0px">
+                                <p class="text-center m-0">التاريخ</p>
+                                <p class="text-center m-0">Date</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.date" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;">
+                            <div class="col-4 bg-200"
+                                style="border-radius: 0px 10px 10px 0px">
+                                <p class="text-center m-0">الاسم</p>
+                                <p class="text-center m-0">Name</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.customer_id.name"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">الجنسية</p>
+                                <p class="text-center m-0">Nationality</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.nationality.name"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">العنوان</p>
+                                <p class="text-center m-0">Address</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.city"/>, <t t-esc="doc.neighbor"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">الادوية المستخدمة</p>
+                                <p class="text-center m-0">Medical Drugs</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.used_medicals"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">الحالة الاجتماعية</p>
+                                <p class="text-center m-0">Marital Status</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.marital_status"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">النوع</p>
+                                <p class="text-center m-0">Gender</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.sex"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">الوظيفة</p>
+                                <p class="text-center m-0">Job</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.job"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">المستوى التعليمي</p>
+                                <p class="text-center m-0">Education Level</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.education"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">دواعي عمل الحجامة</p>
+                                <p class="text-center m-0">The reason for cupping</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.hijama_reasons"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">اسم وهاتف قريب يتم الاتصال به للحاجة</p>
+                                <p class="text-center m-0">Name of relative to call him on need</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.contact_name"/> , <t t-esc="doc.contact_mobile"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">كيف عرفت عنا؟</p>
+                                <p class="text-center m-0">How did you know about us?</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-if="doc.found == 'brochure'">
+                                    <p>بروشور</p>
+                                    <p>BROCHURE</p>
+                                </t>
+                                <t t-elif="doc.found == 'canvas'">
+                                    <p>اللوحة</p>
+                                    <p>BOARD</p>
+                                </t>
+                                <t t-elif="doc.found == 'whatsapp'">
+                                    <p>واتساب</p>
+                                    <p>WHATSAPP</p>
+                                </t>
+                                <t t-elif="doc.found == 'live'">
+                                    <p>لايف</p>
+                                    <p>LIVE</p>
+                                </t>
+                                <t t-elif="doc.found == 'friend'">
+                                    <p>صديق</p>
+                                    <p>FRIEND</p>
+                                </t>
+                                <t t-elif="doc.found == 'discount'">
+                                    <p>خصومات</p>
+                                    <p>DISCOUNTS</p>
+                                </t>
+                                <t t-elif="doc.found == 'insta'">
+                                    <p>انستغرام</p>
+                                    <p>INSTAGRAM</p>
+                                </t>
+                                <t t-elif="doc.found == 'optimun'">
+                                    <p>الامثل</p>
+                                    <p>THE BEST</p>
+                                </t>
+                                <t t-elif="doc.found == 'review'">
+                                    <p>مراجع</p>
+                                    <p>REVIEWER</p>
+                                </t>
+                                <t t-elif="doc.found == 'google'">
+                                    <p>قوقل</p>
+                                    <p>GOOGLE</p>
+                                </t>
+                                <t t-elif="doc.found == 'snap'">
+                                    <p>سناب</p>
+                                    <p>SNAPCHAT</p>
+                                </t>
+                                <t t-elif="doc.found == 'special'">
+                                    <p>خاص</p>
+                                    <p>SPECIAL</p>
+                                </t>
+                                <t t-elif="doc.found == 'exclusive'">
+                                    <p>حصري</p>
+                                    <p>EXCLUSIVE</p>
+                                </t>
+                                <t t-else="">
+                                    <p>اخرى</p>
+                                    <p>OTHER</p>
+                                </t>
+
+
+                            </div>
+                    </div>
+                    </div>
+                    <div class="col-6" style="border: 1px solid gray; border-left: none">
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">الاخصائي</p>
+                                <p class="text-center m-0">Specialist</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.doctor_id.name"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">الجوال</p>
+                                <p class="text-center m-0">Mobile</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.mobile"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">العمر</p>
+                                <p class="text-center m-0">Age</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.age"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200">
+                                <p class="text-center m-0">رقم الهوية</p>
+                                <p class="text-center m-0">ID Number</p>
+                            </div>
+                            <div class="col-8 text-center" style="position: absolute; bottom: 0%; transform: translate(-50%, -50%);">
+                                <t t-esc="doc.id_number"/>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-12 text-center text-danger">
+                                <h4>هل تعاني من احد الامراض ؟</h4>
+                                <p>Do you have any of these diseases ?</p>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200" style="text-align: center; display: flex; vertical-align: middle;">
+                                <t t-if="doc.hepatitis == True">
+                                    <i class="fa fa-check-circle-o fa-lg" aria-hidden="true"></i>
+                                </t>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-center m-0">التهاب كبد فيروسي (سي) او (بي)</p>
+                                <p class="text-center m-0">Hepatitis (C) or (B)</p>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200" style="text-align: center; display: flex; vertical-align: middle;">
+                                <t t-if="doc.aids == True">
+                                    <i class="fa fa-check-circle-o fa-lg" aria-hidden="true"></i>
+                                </t>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-center m-0">الايدز</p>
+                                <p class="text-center m-0">Aids</p>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200" style="text-align: center; display: flex; vertical-align: middle;">
+                                <t t-if="doc.cva == True">
+                                    <i class="fa fa-check-circle-o fa-lg" aria-hidden="true"></i>
+                                </t>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-center m-0">جلطة دماغية</p>
+                                <p class="text-center m-0">CVA</p>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200" style="text-align: center; display: flex; vertical-align: middle;">
+                                <t t-if="doc.cancer == True">
+                                    <i class="fa fa-check-circle-o fa-lg" aria-hidden="true"></i>
+                                </t>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-center m-0">السرطان</p>
+                                <p class="text-center m-0">Cancer</p>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200" style="text-align: center; display: flex; vertical-align: middle;">
+                                <t t-if="doc.kidney_diseases == True">
+                                    <i class="fa fa-check-circle-o fa-lg" aria-hidden="true"></i>
+                                </t>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-center m-0">الكلى</p>
+                                <p class="text-center m-0">Kidney Diseases</p>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200" style="text-align: center; display: flex; vertical-align: middle;">
+                                <t t-if="doc.bleeding_disorders == True">
+                                    <i class="fa fa-check-circle-o fa-lg" aria-hidden="true"></i>
+                                </t>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-center m-0">امراض سيولة الدم</p>
+                                <p class="text-center m-0">Bleeding Disorders</p>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200" style="text-align: center; display: flex; vertical-align: middle;">
+                                <t t-if="doc.cardiac_diseases == True">
+                                    <i class="fa fa-check-circle-o fa-lg" aria-hidden="true"></i>
+                                </t>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-center m-0">امراض القلب</p>
+                                <p class="text-center m-0">Cardiac Diseases</p>
+                            </div>
+                        </div>
+                        <div class="row" style="position: relative; height: 100%; border-bottom: 1px solid gray;;">
+                            <div class="col-4 bg-200" style="text-align: center; display: flex; vertical-align: middle;">
+                                <t t-if="doc.pregnancy == True">
+                                    <i class="fa fa-check-circle-o fa-lg" aria-hidden="true"></i>
+                                </t>
+                            </div>
+                            <div class="col-8">
+                                <p class="text-center m-0">للسيدات (حامل)</p>
+                                <p class="text-center m-0">Female (Pregnancy)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div><br/>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <p>توقيع المراجع</p>
+                    </div>
+                    <div class="col-6">
+                        <p>توقيع الاخصائي</p>
+                    </div>
+                </div>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <br/>
+                        <p>...............................................</p>
+                    </div>
+                    <div class="col-6">
+                        <br/>
+                        <p>...............................................</p>
+                    </div>
+                </div>
+
+            </t>
+            </t>
+        </t>
+    </template>
+</odoo>

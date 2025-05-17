@@ -1,0 +1,143 @@
+<odoo>
+    <data noupdate="1">
+        <record id="seq_hijama_req" model="ir.sequence">
+            <field name="name">Hijama Sequencer</field>
+            <field name="code">khabir.hijama</field>
+            <field name="prefix">KHJ-</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field name="padding">5</field>
+        </record>
+    </data>
+    <data>
+        <record id="khabir_hajima_search" model="ir.ui.view">
+            <field name="name">Hijama.search</field>
+            <field name="model">khabir.hijama</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="id_number"/>
+                    <field name="customer_id" string= "Customer"/>
+                    <field name="mobile"/>
+                </search>
+            </field>
+        </record>
+
+        <!--  Views  -->
+        <!--  Form View  -->
+        <record id="khabir_hijama_form_view" model="ir.ui.view">
+            <field name="name">Hijama</field>
+            <field name="model">khabir.hijama</field>
+            <field name="arch" type="xml">
+                <form string="hijama">
+                    <header>
+                        <button name="check" type="object" string="Check" invisible="state != 'draft'" class="oe_highlight"/>
+                        <button name="confirm" type="object" string="Confirm" invisible="state != 'check'" class="oe_highlight"/>
+                        <button name="paid" type="object" string="Paid" invisible="state != 'confirm'" class="oe_highlight"/>
+                        <button name="complete" type="object" string="Complete" invisible="state != 'paid'" class="oe_highlight"/>
+                        <button name="invoice" type="object" string="Create Invoice" invisible="is_invoiced"  class="btn-danger"/>
+<!--                        <button name="action_open_journal_wizard" type="object" string="Select Journal" class="btn-primary"/>-->
+                        <button name="action_view_invoices" type="object" string="View Invoices" class="btn-secondary" invisible="not is_invoiced"/>
+                        <button name="cancel" type="object" string="Cancel" invisible="state == 'cancel'"  class="btn-danger"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,check,confirm,paid,complete,cancel"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="0"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="customer_id"/>
+                                <field name="hijama_type"/>
+                                <field name="date"/>
+                                <field name="cost"/>
+                                <field name="doctor_id" required="state == 'paid'"/>
+                                <field name="doctor_presentage" required="state == 'paid'" invisible="state == 'draft' or state == 'confirm'"/>
+                                <field name="age"/>
+                                <field name="nationality"/>
+                                <field name="id_number"/>
+                                <field name="journal_id" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="mobile"/>
+                                <field name="city"/>
+                                <field name="neighbor"/>
+                                <field name="hijama_reasons"/>
+                                <field name="used_medicals"/>
+                                <field name="contact_name"/>
+                                <field name="contact_mobile"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="marital_status"/>
+                                <field name="sex"/>
+                                <field name="job"/>
+                                <field name="education"/>
+                                <field name="is_invoiced" invisible="1" />
+                            </group>
+                            <group>
+                                <field name="hepatitis"/>
+                                <field name="aids"/>
+                                <field name="cva"/>
+                                <field name="cancer"/>
+                                <field name="kidney_diseases"/>
+                                <field name="bleeding_disorders"/>
+                                <field name="cardiac_diseases"/>
+                                <field name="pregnancy"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="found"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <!--  Tree View  -->
+        <record id="khabir_hijama_tree_view" model="ir.ui.view">
+            <field name="name">Hijama</field>
+            <field name="model">khabir.hijama</field>
+            <field name="arch" type="xml">
+                <tree string="hijama" default_order="date desc">
+                    <field name="name"/>
+                    <field name="customer_id"/>
+                    <field name="hijama_type"/>
+                    <field name="id_number"/>
+                    <field name="mobile"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="search_hijama_view" model="ir.ui.view">
+            <field name="name">Search Hijama</field>
+            <field name="model">khabir.hijama</field>
+            <field name="arch" type="xml">
+                <search string="hijama">
+                    <field name="name"/>
+                    <field name="customer_id"/>
+                    <field name="id_number"/>
+                    <field name="mobile"/>
+                </search>
+            </field>
+        </record>
+        <!--  Actions  -->
+        <!--  hijama  -->
+        <record id="khabir_hijama_action" model="ir.actions.act_window">
+            <field name="name">Hijama</field>
+            <field name="res_model">khabir.hijama</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create"> Click to add new Hijama. </p>
+            </field>
+        </record>
+
+        <!--  MenuItems  -->
+        <menuitem id="khabir_hijama_main" name="Hijama"/>
+        <menuitem id="hijama" name="Hijama" parent="khabir_hijama_main" action="khabir_hijama_action" sequence="1"/>
+
+    </data>
+</odoo>

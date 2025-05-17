@@ -1,0 +1,46 @@
+<odoo>
+    <data>
+        <!--  Views  -->
+        <!--  Form View  -->
+        <record id="hijama_type_form_view" model="ir.ui.view">
+            <field name="name">Hijama</field>
+            <field name="model">hijama.type</field>
+            <field name="arch" type="xml">
+                <form string="hijama">
+                    <sheet>
+                        <group>
+                            <field name="name" required="0"/>
+                            <field name="product_id"/>
+                            <field name="have_presentage"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <!--  Tree View  -->
+        <record id="hijama_type_tree_view" model="ir.ui.view">
+            <field name="name">Hijama</field>
+            <field name="model">hijama.type</field>
+            <field name="arch" type="xml">
+                <tree string="hijama">
+                    <field name="name"/>
+                    <field name="product_id"/>
+                    <field name="have_presentage"/>
+                </tree>
+            </field>
+        </record>
+        <!--  Actions  -->
+        <!--  hijama  -->
+        <record id="hijama_type_action" model="ir.actions.act_window">
+            <field name="name">Types</field>
+            <field name="res_model">hijama.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create"> Click to add new Types. </p>
+            </field>
+        </record>
+        <!--  MenuItems  -->
+        <!-- <menuitem id="khabir_hijama_main" name="Hijama"/> -->
+        <menuitem id="hijama_type" name="Hijama Types" parent="khabir_hijama.khabir_hijama_main" action="hijama_type_action" sequence="2"/>
+    </data>
+</odoo>

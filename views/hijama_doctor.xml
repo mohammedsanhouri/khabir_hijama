@@ -1,0 +1,42 @@
+<odoo>
+    <data>
+        <!--  Views  -->
+        <!--  Form View  -->
+        <record id="hijama_doctor_form_view" model="ir.ui.view">
+            <field name="name">Hijama</field>
+            <field name="model">hijama.doctor</field>
+            <field name="arch" type="xml">
+                <form string="hijama">
+                    <sheet>
+                        <group>
+                            <field name="name" required="0"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <!--  Tree View  -->
+        <record id="hijama_doctor_tree_view" model="ir.ui.view">
+            <field name="name">Hijama</field>
+            <field name="model">hijama.doctor</field>
+            <field name="arch" type="xml">
+                <tree string="hijama">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <!--  Actions  -->
+        <!--  hijama  -->
+        <record id="hijama_doctor_action" model="ir.actions.act_window">
+            <field name="name">Doctors</field>
+            <field name="res_model">hijama.doctor</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create"> Click to add new Doctor. </p>
+            </field>
+        </record>
+        <!--  MenuItems  -->
+        <!-- <menuitem id="khabir_hijama_main" name="Hijama"/> -->
+        <menuitem id="hijama_doctor" name="Doctors" parent="khabir_hijama.khabir_hijama_main" action="hijama_doctor_action" sequence="3"/>
+    </data>
+</odoo>

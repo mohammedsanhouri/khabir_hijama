@@ -1,0 +1,69 @@
+<odoo>
+    <record id="view_invoice_report_tree" model="ir.ui.view">
+        <field name="name">account.move.invoice.report.tree</field>
+        <field name="model">account.move</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Reports" create="false" edit="false">
+                <field name="partner_id" string="Customer"/>
+                <field name="hijama_type_id"/>
+                <field name="invoice_date"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="cash_amount_paid" sum="Cash Total"/>
+                <field name="bank_amount_paid" sum="Bank Total"/>
+                <field name="payment_reference"/>
+                <field name="currency_id" invisible="1" optional="hide"/>
+                <field name="journal_id" string="Branch"/>
+            </tree>
+        </field>
+    </record>
+        <record id="view_invoice_report_graph" model="ir.ui.view">
+        <field name="name">account.move.invoice.report.graph</field>
+        <field name="model">account.move</field>
+        <field name="type">graph</field>
+        <field name="arch" type="xml">
+            <graph string="Invoice Amount Over Time" type="bar">
+                <field name="invoice_date" type="row"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_invoice_report_search" model="ir.ui.view">
+        <field name="name">account.move.invoice.report.search</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <search string="Search Invoices">
+                <field name="partner_id" string="Customer"/>
+                <field name="journal_id" string="Branch"/>
+                <field name="invoice_date"/>
+                <filter name="this_month" string="This Month" domain="[('invoice_date', '>=', (context_today().replace(day=1)))]"/>
+                <filter name="cash_paid" string="Cash Paid" domain="[('cash_amount_paid','>',0)]"/>
+                <filter name="bank_paid" string="Bank Paid" domain="[('bank_amount_paid','>',0)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_partner" string="Customer" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_branch" string="Branch" context="{'group_by':'journal_id'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by':'invoice_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_invoice_report_summary" model="ir.actions.act_window">
+        <field name="name">Invoice Reports</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,graph</field>
+        <field name="domain">[('move_type', '=', 'out_invoice'),('payment_state', '=', 'paid')]</field>
+        <field name="view_id" ref="view_invoice_report_tree"/>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_reports_root"
+          name="Reports"
+          parent="khabir_hijama.khabir_hijama_main" 
+          sequence="10"/>
+
+    <menuitem id="menu_invoice_report_summary"
+          name="Invoice Reports"
+          parent="menu_reports_root"
+          action="action_invoice_report_summary"
+          sequence="1"/>
+</odoo>

@@ -1,0 +1,17 @@
+<odoo>
+    <record id="view_journal_selection_wizard" model="ir.ui.view">
+        <field name="name">journal.selection.wizard.form</field>
+        <field name="model">journal.selection.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Journal">
+                <group>
+                    <field name="journal_id" domain="[('type', 'in', ['sale'])]"/>
+                </group>
+                <footer>
+                    <button string="Select" type="object" name="action_select_journal" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
