@@ -14,6 +14,7 @@
         'report/report.xml',
         'report/hijama_report.xml',
         'report/hijama_record_report.xml',
+        'views/hijama_source_info_views.xml',
 
     ],
     'installable': True,

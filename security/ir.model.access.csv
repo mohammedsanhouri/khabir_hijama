@@ -2,4 +2,5 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_khabir_hijama,khabir.hijama,model_khabir_hijama,,1,1,1,1
 access_hijama_type,hijama.type,model_hijama_type,,1,1,1,1
 access_hijama_doctor,hijama.doctor,model_hijama_doctor,,1,1,1,1
+access_hijama_source_info,hijama.source.info,model_hijama_source_info,,1,1,1,1
 khabir_hijama.access_journal_selection_wizard,access_journal_selection_wizard,khabir_hijama.model_journal_selection_wizard,base.group_user,1,1,1,1

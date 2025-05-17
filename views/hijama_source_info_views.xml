@@ -1,0 +1,42 @@
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_hijama_source_info_tree" model="ir.ui.view">
+        <field name="name">hijama.source.info.tree</field>
+        <field name="model">hijama.source.info</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_hijama_source_info_form" model="ir.ui.view">
+        <field name="name">hijama.source.info.form</field>
+        <field name="model">hijama.source.info</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hijama_source_info" model="ir.actions.act_window">
+        <field name="name">Source of Information</field>
+        <field name="res_model">hijama.source.info</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="menu_hijama_config" name="Configuration" parent="khabir_hijama_main"/>
+    <menuitem id="menu_hijama_source_info" name="Source Info"
+              parent="menu_hijama_config"
+              action="action_hijama_source_info"/>
+
+</odoo>

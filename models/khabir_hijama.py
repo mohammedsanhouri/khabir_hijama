@@ -2,6 +2,12 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 import re
 
+class SourceInfo(models.Model):
+
+    _name = 'hijama.source.info'
+    _description = 'Source of Information'
+
+    name = fields.Char(string="Source of Informtion",required=True) 
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
@@ -97,19 +103,7 @@ class KhabirHijama(models.Model):
     bleeding_disorders = fields.Boolean(string="Bleeding Disorders", tracking=True)
     cardiac_diseases = fields.Boolean(string="Cardiac Diseases", tracking=True)
     pregnancy = fields.Boolean(string="Pregnancy", tracking=True)
-    found = fields.Selection([('brochure', 'Brochure'),
-                            ('friend', 'Friend'),
-                            ('review', 'Review'),
-                            ('canvas', 'Canvas'),
-                            ('discount', 'Discount'),
-                            ('google', 'Google'),
-                            ('whatsapp', 'Whatsapp'),
-                            ('insta', 'Instagram'),
-                            ('snap', 'Snap'),
-                            ('live', 'Live'),
-                            ('optimum', 'Optimum'),
-                            ('special', 'Special'),
-                            ('exclusive', 'Exclusive')], string="How did you know about us?", tracking=True)
+    found = fields.Many2one('hijama.source.info',string="How did you know about us?", tracking=True)
     state = fields.Selection([('draft', 'Draft'),
                               ('check', 'Check'),
                              ('confirm', 'Confirm'),

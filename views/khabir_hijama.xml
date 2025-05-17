@@ -75,6 +75,7 @@
                                 <field name="sex"/>
                                 <field name="job"/>
                                 <field name="education"/>
+                                <field name="found"/>
                                 <field name="is_invoiced" invisible="1" />
                             </group>
                             <group>
@@ -90,7 +91,7 @@
                         </group>
                         <group>
                             <group>
-                                <field name="found"/>
+                                
                             </group>
                         </group>
                     </sheet>
