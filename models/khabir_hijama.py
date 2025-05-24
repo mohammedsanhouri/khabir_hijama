@@ -33,7 +33,7 @@ class AccountMove(models.Model):
     bank_amount_paid = fields.Monetary(
         string="Bank Paid", compute='_compute_payment_breakdown',currency_field='currency_id', store=True
     )
-
+    @api.depends('payment_state', 'line_ids.payment_id.journal_id', 'line_ids.payment_id.amount')
     def _compute_payment_breakdown(self):
         for move in self:
             cash = 0.0
@@ -335,7 +335,6 @@ class KhabirHijama(models.Model):
                         'invoice_id': invoice.id,
                         'commission_amount': session.commission_amount,
                     })
-                    session.commission_created = True
 
 class HijamaTypes(models.Model):
     _name = 'hijama.type'
