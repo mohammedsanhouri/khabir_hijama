@@ -1,42 +1,68 @@
 <odoo>
     <data>
-        <!--  Views  -->
-        <!--  Form View  -->
+        <!-- Form View for Doctor -->
         <record id="hijama_doctor_form_view" model="ir.ui.view">
-            <field name="name">Hijama</field>
+            <field name="name">hijama.doctor.form</field>
             <field name="model">hijama.doctor</field>
             <field name="arch" type="xml">
-                <form string="hijama">
+                <form string="Hijama Doctor">
                     <sheet>
                         <group>
-                            <field name="name" required="0"/>
+                            <field name="name" required="1"/>
                         </group>
+                        <notebook>
+                            <page string="Commissions">
+                            <group>
+                                <field name="total_commission" readonly="1"/>
+                                <field name="day_commission" readonly="1"/>
+                                <field name="week_commission" readonly="1"/>
+                                <field name="month_commission" readonly="1"/>
+                                <field name="currency_id" invisible="1" optional="hide"/>
+
+                            </group>
+                                <field name="commission_ids" readonly="1" context="{'default_doctor_id': active_id}">
+                                    <tree editable="bottom">
+                                        <field name="date"/>
+                                        <field name="currency_id" invisible="1" optional="hide"/>
+                                        <field name="commission_amount" sum= "commission_amount" readonly="1"/>
+                                        <field name="hijama_session_id" readonly="1"/>
+                                        <field name="invoice_id" readonly="1"/>
+
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
         </record>
-        <!--  Tree View  -->
+
+        <!-- Tree View for Doctor -->
         <record id="hijama_doctor_tree_view" model="ir.ui.view">
-            <field name="name">Hijama</field>
+            <field name="name">hijama.doctor.tree</field>
             <field name="model">hijama.doctor</field>
             <field name="arch" type="xml">
-                <tree string="hijama">
+                <tree string="Doctors">
                     <field name="name"/>
+                    <field name="commission_count"/>
                 </tree>
             </field>
         </record>
-        <!--  Actions  -->
-        <!--  hijama  -->
+
+        <!-- Action to open Doctor model -->
         <record id="hijama_doctor_action" model="ir.actions.act_window">
             <field name="name">Doctors</field>
             <field name="res_model">hijama.doctor</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
-                <p class="oe_view_nocontent_create"> Click to add new Doctor. </p>
+                <p class="oe_view_nocontent_create">Click to add a new doctor.</p>
             </field>
         </record>
-        <!--  MenuItems  -->
-        <!-- <menuitem id="khabir_hijama_main" name="Hijama"/> -->
-        <menuitem id="hijama_doctor" name="Doctors" parent="khabir_hijama.khabir_hijama_main" action="hijama_doctor_action" sequence="3"/>
+
+        <!-- Menu item -->
+        <menuitem id="hijama_doctor_menu" name="Doctors"
+                  parent="khabir_hijama.khabir_hijama_main"
+                  action="hijama_doctor_action"
+                  sequence="3"/>
     </data>
 </odoo>

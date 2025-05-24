@@ -1,6 +1,8 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 import re
+from datetime import date, timedelta
+from odoo.exceptions import UserError
 
 class SourceInfo(models.Model):
 
@@ -84,6 +86,7 @@ class KhabirHijama(models.Model):
     contact_name = fields.Char(string="Contact Name", tracking=True)
     contact_mobile = fields.Char(string="Contact Mobile", tracking=True)
     hijama_reasons = fields.Char(string="Hijama Reasons", tracking=True)
+    commission_amount = fields.Float(string="Commission Fee", readonly=False, tracking=True)
     used_medicals = fields.Char(string="Used Medicals", tracking=True)
     marital_status = fields.Selection([('married', 'Married'),
                              ('single', 'Single')], string="Marital Status", default='single', tracking=True)
@@ -113,6 +116,37 @@ class KhabirHijama(models.Model):
     invoice_ids = fields.One2many('account.move', 'hijama_id', string="Invoices")
     is_invoiced = fields.Boolean(string="Is Invoiced", default=False)
     journal_id = fields.Many2one('account.journal', string="Journal")
+    commission_created = fields.Boolean(string="Commission Created", default=False)
+    show_create_commission_button = fields.Boolean(compute="_compute_show_create_commission_button")
+    price_unit = fields.Float(string='Unit Price', compute='_compute_price_unit', store=True)
+
+    @api.depends('invoice_ids')
+    def _compute_price_unit(self):
+        for rec in self:
+            if rec.invoice_ids and rec.invoice_ids.invoice_line_ids:
+                rec.price_unit = rec.invoice_ids.invoice_line_ids[0].price_unit
+            else:
+                rec.price_unit = 0.0
+    @api.depends('state', 'doctor_id', 'hijama_type.have_presentage', 'commission_amount', 'commission_created')            
+    def _compute_show_create_commission_button(self):
+     for rec in self:
+        rec.show_create_commission_button = (
+            rec.state == 'complete'
+            and rec.doctor_id
+            and rec.hijama_type.have_presentage
+            and rec.commission_amount > 0
+            and not rec.commission_created
+        )
+    @api.depends('state', 'is_invoiced', 'show_create_commission_button')
+    def _compute_button_visibility(self):
+        for rec in self:
+            rec.can_check = (rec.state == 'draft')
+            rec.can_invoice = (rec.state == 'check') and not rec.is_invoiced
+            rec.can_create_commission = (rec.state == 'complete') and rec.show_create_commission_button
+            rec.can_confirm = (rec.state == 'check') and rec.is_invoiced
+            rec.can_complete = (rec.state == 'confirm')
+            rec.can_cancel = rec.state in ['draft', 'check', 'confirm']
+                
     @api.constrains('mobile', 'id_number')
     def _check_mobile_and_id(self):
      for rec in self:
@@ -165,7 +199,7 @@ class KhabirHijama(models.Model):
                     'state': 'paid',
                 })
             else:
-                raise ValidationError(_("Paid the invoice first."))
+                raise ValidationError(_("Pay the invoice first."))
     
     def complete(self):
         return self.sudo().write({
@@ -202,8 +236,18 @@ class KhabirHijama(models.Model):
             'context': {'default_journal_id': self.journal_id.id},  # Pass current journal to the wizard (optional)
         }
 
+    @api.depends('is_invoiced', 'state')  # Add other conditions as needed
+    def _compute_show_invoice_button(self):
+        for rec in self:
+            rec.show_invoice_button = not rec.is_invoiced and rec.state == 'confirmed'
 
 
+    show_cancel_button = fields.Boolean(compute="_compute_show_cancel_button")
+
+    @api.depends('state')
+    def _compute_show_cancel_button(self):
+        for record in self:
+            record.show_cancel_button = record.state in ['draft', 'check']
     def action_open_journal_wizard(self):
         # Open the journal selection wizard
         return {
@@ -213,6 +257,22 @@ class KhabirHijama(models.Model):
             'view_id': self.env.ref('khabir_hijama.view_journal_selection_wizard').id,
             'target': 'new',  # Open as a modal
             'context': {'default_journal_id': self.journal_id.id},  # Pass current journal to the wizard (optional)
+        }
+    
+    def create_commission_button(self):
+        if self.commission_created:
+            raise UserError("Commission already created.")
+        self._check_and_create_commission()
+        self.commission_created = True
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _("Commission Created"),
+                'message': _("Doctor commission created successfully."),
+                'type': 'success',
+                'sticky': False,
+            }
         }
 
     def action_view_invoices(self):
@@ -225,14 +285,57 @@ class KhabirHijama(models.Model):
             'context': {'create': False},
             'target': 'current',
         }
-    
     @api.model
     def create(self, values):
+        # Generate sequence number
         seq = self.env['ir.sequence'].next_by_code('khabir.hijama') or '/'
         values['name'] = seq
-        return super(KhabirHijama, self.sudo()).create(values)
-    
 
+        # Create the record
+        record = super(KhabirHijama, self.sudo()).create(values)
+
+        # Check commission after creation
+        record._check_commission_vs_price(values)
+
+        return record
+
+    def write(self, values):
+        # Check commission on write
+        self._check_commission_vs_price(values)
+        return super().write(values)
+
+    def _check_commission_vs_price(self, values):
+        for record in self:
+            # Check if commission_amount is present in the incoming values or already on the record
+            commission = values.get('commission_amount', record.commission_amount)
+            price_unit = values.get('price_unit', record.price_unit)
+
+            if commission and price_unit and commission > price_unit:
+                raise ValidationError(f"Commission ({commission}) cannot exceed the unit price ({price_unit}).")
+
+    @api.depends('commission_ids','commission_ids.date', 'commission_ids.commission_amount', )
+    def _check_and_create_commission(self):
+     for session in self:
+        if (
+            session.doctor_id and
+            session.hijama_type.have_presentage and
+            session.commission_amount > 0 and
+            session.invoice_ids
+        ):
+            invoice = session.invoice_ids[0]
+            if invoice.payment_state == 'paid':
+                existing = self.env['hijama.doctor.commission'].search([
+                    ('hijama_session_id', '=', session.id)
+                ], limit=1)
+                if not existing:
+                    self.env['hijama.doctor.commission'].create({
+                        'doctor_id': session.doctor_id.id,
+                        'patient_id': session.customer_id.id,
+                        'hijama_session_id': session.id,
+                        'invoice_id': invoice.id,
+                        'commission_amount': session.commission_amount,
+                    })
+                    session.commission_created = True
 
 class HijamaTypes(models.Model):
     _name = 'hijama.type'
@@ -245,3 +348,50 @@ class HijamaDoctor(models.Model):
     _name = 'hijama.doctor'
 
     name = fields.Char(string="Name")
+    commission_ids = fields.One2many('hijama.doctor.commission', 'doctor_id', string="Commissions")
+    commission_count = fields.Integer(string="Commission Count", compute="_compute_commission_count",)
+    total_commission = fields.Monetary(string="Total Commission", compute="_compute_commission_summary", currency_field='currency_id',store=False)        
+    day_commission = fields.Monetary(string="Day Commission", compute="_compute_commission_summary", currency_field='currency_id',store=False)
+    week_commission = fields.Monetary(string="Week Commission", compute="_compute_commission_summary", currency_field='currency_id',store=False)
+    month_commission = fields.Monetary(string="Month Commission", compute="_compute_commission_summary", currency_field='currency_id')
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
+    @api.depends('commission_ids')
+    def _compute_commission_count(self):
+        for rec in self:
+            rec.commission_count = len(rec.commission_ids)
+    def action_view_commissions(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Doctor Commissions',
+            'view_mode': 'tree,form',
+            'res_model': 'hijama.doctor.commission',
+            'domain': [('doctor_id', '=', self.id)],
+            'context': {'create': False},
+        }
+    
+    @api.depends('commission_ids','commission_ids.date', 'commission_ids.commission_amount')
+    def _compute_commission_summary(self):
+        for doctor in self:
+            now = date.today()
+            day_ago = now - timedelta(days=1)
+            week_ago = now - timedelta(weeks=1)
+            month_ago = now - timedelta(days=30)
+            
+            doctor.week_commission = sum(doctor.commission_ids.filtered(lambda c: c.date >= week_ago).mapped('commission_amount'))
+            doctor.month_commission = sum(doctor.commission_ids.filtered(lambda c: c.date >= month_ago).mapped('commission_amount'))
+            doctor.day_commission = sum(doctor.commission_ids.filtered(lambda c: c.date >= day_ago).mapped('commission_amount'))
+            doctor.total_commission = sum(doctor.commission_ids.mapped('commission_amount'))
+
+class HijamaDoctorCommission(models.Model):
+    _name = 'hijama.doctor.commission'
+    _description = 'Doctor Commission'
+    _order = 'date desc'
+
+    doctor_id = fields.Many2one('hijama.doctor', string="Doctor", required=True)
+    patient_id = fields.Many2one('res.partner', string="Patient")
+    hijama_session_id = fields.Many2one('khabir.hijama', string="Session")
+    invoice_id = fields.Many2one('account.move', string="Invoice")
+    commission_amount = fields.Monetary(string="Commission Fee", readonly=False)  # editable
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
+    date = fields.Date(string="Date", related='hijama_session_id.date', store=True)
+    commission_count = fields.Integer(string="Commission Count", compute="_compute_commission_count",)

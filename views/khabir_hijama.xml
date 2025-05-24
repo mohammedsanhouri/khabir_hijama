@@ -30,15 +30,38 @@
             <field name="arch" type="xml">
                 <form string="hijama">
                     <header>
-                        <button name="check" type="object" string="Check" invisible="state != 'draft'" class="oe_highlight"/>
-                        <button name="confirm" type="object" string="Confirm" invisible="state != 'check'" class="oe_highlight"/>
-                        <button name="paid" type="object" string="Paid" invisible="state != 'confirm'" class="oe_highlight"/>
-                        <button name="complete" type="object" string="Complete" invisible="state != 'paid'" class="oe_highlight"/>
-                        <button name="invoice" type="object" string="Create Invoice" invisible="is_invoiced"  class="btn-danger"/>
-<!--                        <button name="action_open_journal_wizard" type="object" string="Select Journal" class="btn-primary"/>-->
-                        <button name="action_view_invoices" type="object" string="View Invoices" class="btn-secondary" invisible="not is_invoiced"/>
-                        <button name="cancel" type="object" string="Cancel" invisible="state == 'cancel'"  class="btn-danger"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,check,confirm,paid,complete,cancel"/>
+                        <!-- Standard state-based buttons -->
+                        <button name="check" type="object" string="Check"
+                            invisible="state != 'draft'" class="oe_highlight"/>
+
+                        <button name="confirm" type="object" string="Confirm"
+                            invisible="state != 'is_invoiced'"  class="oe_highlight"/>
+
+                        <button name="paid" type="object" string="Paid"
+                                invisible="state != 'check'" class="oe_highlight"/>
+
+                        <button name="complete" type="object" string="Complete"
+                                invisible="state != 'paid'" class="oe_highlight"/>
+
+                        <!-- Invoice-related buttons -->
+                        <button name="invoice" type="object" string="Create Invoice"
+                                class="oe_highlight" 
+                                invisible="is_invoiced"  />
+
+                        <button name="action_view_invoices" type="object" string="View Invoices"
+                                invisible="not is_invoiced" class="btn-secondary"/>
+
+                        <!-- Cancel button -->
+                        <button name="cancel" type="object" string="Cancel"
+                                invisible="not show_cancel_button"  class="btn-danger"/>
+
+                        <!-- Create Commission button with custom logic -->
+                        <button name="create_commission_button" type="object" string="Create Commission"
+                                invisible="state != 'paid'" class="btn-primary"/>
+
+                        <!-- Status bar -->
+                        <field name="state" widget="statusbar" statusbar_visible="draft,check,paid,complete,cancel"/>
+
                     </header>
                     <sheet>
                         <div class="oe_title">
@@ -53,11 +76,13 @@
                                 <field name="date"/>
                                 <field name="cost"/>
                                 <field name="doctor_id" required="state == 'paid'"/>
-                                <field name="doctor_presentage" required="state == 'paid'" invisible="state == 'draft' or state == 'confirm'"/>
+                                <field name="commission_amount" required="state == 'paid'" invisible="state == 'draft' or state == 'confirm'"/>
                                 <field name="age"/>
                                 <field name="nationality"/>
                                 <field name="id_number"/>
                                 <field name="journal_id" invisible="1"/>
+                                <field name="show_create_commission_button" invisible="1"/>
+
                             </group>
                             <group>
                                 <field name="mobile"/>
@@ -77,6 +102,8 @@
                                 <field name="education"/>
                                 <field name="found"/>
                                 <field name="is_invoiced" invisible="1" />
+                                <field name="show_cancel_button" invisible="1"/>    
+
                             </group>
                             <group>
                                 <field name="hepatitis"/>
