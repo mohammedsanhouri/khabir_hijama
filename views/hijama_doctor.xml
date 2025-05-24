@@ -25,8 +25,8 @@
                                         <field name="date"/>
                                         <field name="currency_id" invisible="1" optional="hide"/>
                                         <field name="commission_amount" sum= "commission_amount" readonly="1"/>
-                                        <field name="hijama_session_id" readonly="1"/>
-                                        <field name="invoice_id" readonly="1"/>
+                                        <field name="hijama_session_id" widget="many2one"/>
+                                        <field name="invoice_id" widget="many2one"/>
 
                                     </tree>
                                 </field>
