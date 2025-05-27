@@ -7,6 +7,10 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="patient_count"/>
+                <field name="total_invoice_amount"/>
+                <field name="currency_id" invisible="1" optional="hide"/>
+                                
             </tree>
         </field>
     </record>
@@ -20,6 +24,8 @@
                 <sheet>
                     <group>
                         <field name="name"/>
+                        <field name="patient_count"/>
+                        <field name="total_invoice_amount"/>
                     </group>
                 </sheet>
             </form>

@@ -9,9 +9,14 @@
                 <form string="hijama">
                     <sheet>
                         <group>
+                            
                             <field name="name" required="0"/>
                             <field name="product_id"/>
-                            <field name="have_presentage"/>
+                            <field name="have_presentage"/>                            
+                            <field name="price"/>
+                            <field name="commission_percentage"/>
+                            <field name="price_after_commission" readonly="1"/>
+                            
                         </group>
                     </sheet>
                 </form>
@@ -26,6 +31,7 @@
                     <field name="name"/>
                     <field name="product_id"/>
                     <field name="have_presentage"/>
+
                 </tree>
             </field>
         </record>

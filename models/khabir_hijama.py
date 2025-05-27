@@ -7,10 +7,24 @@ from odoo.exceptions import UserError
 class SourceInfo(models.Model):
 
     _name = 'hijama.source.info'
-    _description = 'Source of Information'
 
-    name = fields.Char(string="Source of Informtion",required=True) 
+    name = fields.Char(string="Source of Information", required=True)
+    patient_count = fields.Integer(string="Patient Count", compute='_compute_patient_stats')
+    total_invoice_amount = fields.Monetary(string="Total Invoice Amount", compute='_compute_patient_stats', currency_field='currency_id')
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
 
+    @api.depends('khabir_hijama_ids.invoice_ids.amount_total')
+    def _compute_patient_stats(self):
+        for source in self:
+            hijama_records = self.env['khabir.hijama'].search([('found', '=', source.id)])
+            source.patient_count = len(hijama_records)
+            total = 0.0
+            for hijama in hijama_records:
+                for invoice in hijama.invoice_ids:
+                    total += invoice.amount_total
+            source.total_invoice_amount = total
+
+    khabir_hijama_ids = fields.One2many('khabir.hijama', 'found', string="Hijama Sessions")
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
@@ -202,9 +216,38 @@ class KhabirHijama(models.Model):
                 raise ValidationError(_("Pay the invoice first."))
     
     def complete(self):
-        return self.sudo().write({
-            'state': 'complete',
-        })
+        self.sudo().write({'state': 'complete'})
+
+        for session in self:
+            hijama_type = session.hijama_type
+
+            # Check if this hijama type has a commission percentage
+            if (
+                session.doctor_id and
+                hijama_type.have_presentage and
+                hijama_type.commission_percentage > 0 and
+                session.invoice_ids
+            ):
+                invoice = session.invoice_ids[0]
+                
+                # Calculate the commission amount based on hijama type price and percentage
+                commission_amount = hijama_type.price * hijama_type.commission_percentage / 100
+
+                if invoice.payment_state == 'paid' and commission_amount > 0:
+                    existing = self.env['hijama.doctor.commission'].search([
+                        ('hijama_session_id', '=', session.id)
+                    ], limit=1)
+                    if not existing:
+                        self.env['hijama.doctor.commission'].create({
+                            'doctor_id': session.doctor_id.id,
+                            'patient_id': session.customer_id.id,
+                            'hijama_session_id': session.id,
+                            'invoice_id': invoice.id,
+                            'commission_amount': commission_amount,
+                        })
+
+        return True
+
     
     def cancel(self):
         return self.sudo().write({
@@ -342,6 +385,30 @@ class HijamaTypes(models.Model):
     name = fields.Char(string="Name")
     have_presentage = fields.Boolean(string="Have Presentage", tracking=True)
     product_id = fields.Many2one('product.product',string="Product", required=True)
+    price = fields.Float(string="Price", related='product_id.list_price', readonly=True, store=True)
+
+    # Commission percentage given to doctor for this hijama type
+    commission_percentage = fields.Float(string="Commission Percentage (%)")
+
+    # Price after commission: computed field
+    price_after_commission = fields.Float(string="Price after Commission", compute='_compute_price_after_commission', store=True)
+    @api.constrains('commission_percentage', 'have_presentage')
+    def _check_percentage_consistency(self):
+        for rec in self:
+            if rec.commission_percentage and not rec.have_presentage:
+                raise ValidationError("You entered a Commission Percentage but didn't check the 'Have Percentage' box.")
+            if rec.have_presentage and (rec.commission_percentage <= 0):
+                raise ValidationError("You marked 'Have Percentage' but didn't provide a positive Commission Percentage.")
+
+    @api.depends('price', 'commission_percentage')
+    def _compute_price_after_commission(self):
+        for rec in self:
+            if rec.commission_percentage:
+                commission_value = rec.price * rec.commission_percentage / 100
+                rec.price_after_commission = rec.price - commission_value
+            else:
+                rec.price_after_commission = rec.price
+
 
 class HijamaDoctor(models.Model):
     _name = 'hijama.doctor'

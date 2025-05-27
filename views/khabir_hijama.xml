@@ -56,8 +56,8 @@
                                 invisible="not show_cancel_button"  class="btn-danger"/>
 
                         <!-- Create Commission button with custom logic -->
-                        <button name="create_commission_button" type="object" string="Create Commission"
-                                invisible="state != 'paid'" class="btn-primary"/>
+                        <!-- <button name="create_commission_button" type="object" string="Create Commission"
+                                invisible="state != 'paid'" class="btn-primary"/> -->
 
                         <!-- Status bar -->
                         <field name="state" widget="statusbar" statusbar_visible="draft,check,paid,complete,cancel"/>
@@ -74,9 +74,9 @@
                                 <field name="customer_id"/>
                                 <field name="hijama_type"/>
                                 <field name="date"/>
-                                <field name="cost"/>
+                                <field name="cost" readonly="1"/>
                                 <field name="doctor_id" required="state == 'paid'"/>
-                                <field name="commission_amount" required="state == 'paid'" invisible="state == 'draft' or state == 'confirm'"/>
+                                <!-- <field name="commission_amount" required="state == 'paid'" invisible="state == 'draft' or state == 'confirm'"/> -->
                                 <field name="age"/>
                                 <field name="nationality"/>
                                 <field name="id_number"/>

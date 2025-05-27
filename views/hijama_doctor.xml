@@ -12,23 +12,33 @@
                         </group>
                         <notebook>
                             <page string="Commissions">
-                            <group>
-                                <field name="total_commission" readonly="1"/>
-                                <field name="day_commission" readonly="1"/>
-                                <field name="week_commission" readonly="1"/>
-                                <field name="month_commission" readonly="1"/>
-                                <field name="currency_id" invisible="1" optional="hide"/>
-
-                            </group>
+                                <group>
+                                    <field name="total_commission" readonly="1"/>
+                                    <field name="day_commission" readonly="1"/>
+                                    <field name="week_commission" readonly="1"/>
+                                    <field name="month_commission" readonly="1"/>
+                                    <field name="currency_id" invisible="1" optional="hide"/>
+                                </group>
                                 <field name="commission_ids" readonly="1" context="{'default_doctor_id': active_id}">
-                                    <tree editable="bottom">
+                                    <tree>
                                         <field name="date"/>
-                                        <field name="currency_id" invisible="1" optional="hide"/>
-                                        <field name="commission_amount" sum= "commission_amount" readonly="1"/>
-                                        <field name="hijama_session_id" widget="many2one"/>
-                                        <field name="invoice_id" widget="many2one"/>
-
+                                        <field name="commission_amount"/>
+                                        <field name="hijama_session_id"/>
+                                        <field name="invoice_id"/>
                                     </tree>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <field name="doctor_id"/>
+                                                <field name="patient_id"/>
+                                                <field name="hijama_session_id"/>
+                                                <field name="invoice_id"/>
+                                                <field name="commission_amount"/>
+                                                <field name="currency_id" invisible="1" optional="hide"/>
+                                                <field name="date"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
                                 </field>
                             </page>
                         </notebook>
@@ -46,6 +56,40 @@
                     <field name="name"/>
                     <field name="commission_count"/>
                 </tree>
+            </field>
+        </record>
+
+        <!-- Tree View for Doctor Commission -->
+        <record id="hijama_doctor_commission_tree_view" model="ir.ui.view">
+            <field name="name">hijama.doctor.commission.tree</field>
+            <field name="model">hijama.doctor.commission</field>
+            <field name="arch" type="xml">
+                <tree string="Doctor Commissions">
+                    <field name="date"/>
+                    <field name="commission_amount"/>
+                    <field name="hijama_session_id"/>
+                    <field name="invoice_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View for Doctor Commission -->
+        <record id="hijama_doctor_commission_form_view" model="ir.ui.view">
+            <field name="name">hijama.doctor.commission.form</field>
+            <field name="model">hijama.doctor.commission</field>
+            <field name="arch" type="xml">
+                <form string="Doctor Commission">
+                    <sheet>
+                        <group>
+                            <field name="doctor_id"/>
+                            <field name="patient_id"/>
+                            <field name="hijama_session_id"/>
+                            <field name="invoice_id"/>
+                            <field name="commission_amount"/>
+                            <field name="date"/>
+                        </group>
+                    </sheet>
+                </form>
             </field>
         </record>
 
