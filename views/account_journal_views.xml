@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+
+    <record id="action_journal_branch_list" model="ir.actions.act_window">
+        <field name="name">Journal Branches</field>
+        <field name="res_model">account.journal</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <!-- Add the new field to the account.journal form view -->
+    <record id="view_account_journal_form_inherit" model="ir.ui.view">
+        <field name="name">account.journal.form.branch.name</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="branch_name" placeholder="E.g. Riyadh, Jeddah..."/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Define the Branches submenu under Hijama -->
+    <menuitem id="menu_journal_branch_root"
+              name="Branches"
+              parent="khabir_hijama.khabir_hijama_main"
+              action="action_journal_branch_list"
+              sequence="20"/>
+
+    <!-- Define the action to list journals -->
+
+
+  </data>
+</odoo>

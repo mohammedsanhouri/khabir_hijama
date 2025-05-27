@@ -461,3 +461,9 @@ class HijamaDoctorCommission(models.Model):
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
     date = fields.Date(string="Date", related='hijama_session_id.date', store=True)
     commission_count = fields.Integer(string="Commission Count", compute="_compute_commission_count",)
+
+
+class AccountJournal(models.Model):
+    _inherit = 'account.journal'
+
+    branch_name = fields.Char(string="Branch Name")
